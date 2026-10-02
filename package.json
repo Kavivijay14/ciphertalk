@@ -1,0 +1,8 @@
+{
+  "name": "ciphertalk",
+  "version": "1.0.0",
+  "description": "Simple end-to-end encrypted chat with zero data retention",
+  "main": "server.js",
+  "scripts": { "start": "node server.js" },
+  "dependencies": { "ws": "^8.18.0" }
+}

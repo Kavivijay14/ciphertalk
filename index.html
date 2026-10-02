@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CipherTalk</title>
+<style>
+:root{--bg:#0b1020;--panel:#111830;--card:#161f3a;--line:#243052;--text:#e9edf8;--muted:#8c98b8;--a:#5b6cf5;--b:#3b8cff;--ok:#3ddc97}
+*{box-sizing:border-box}body{margin:0;height:100vh;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+button,input{font:inherit;color:inherit}.lg{width:30px;height:30px;color:var(--a)}
+.brand{font-weight:700;font-size:1.2rem;display:flex;align-items:center;gap:8px}.brand span{color:var(--b)}
+input{width:100%;padding:11px 13px;border-radius:10px;border:1px solid var(--line);background:var(--bg)}
+input:focus-visible,button:focus-visible{outline:2px solid var(--b);outline-offset:2px}
+.btn{width:100%;padding:12px;border:0;border-radius:10px;font-weight:600;cursor:pointer;background:linear-gradient(90deg,var(--a),var(--b));color:#fff}
+/* login */
+#login{height:100%;display:grid;grid-template-columns:1.1fr 1fr}
+#hero{padding:8vw;display:flex;flex-direction:column;justify-content:center;gap:18px;background:linear-gradient(160deg,#1b1f6b,var(--bg) 70%)}
+#hero .brand{font-size:2.2rem}#hero .lg{width:56px;height:56px}#hero p{color:var(--muted);max-width:42ch;line-height:1.5;margin:0}
+.feat{display:flex;gap:12px;align-items:center}.feat i{width:38px;height:38px;border-radius:50%;background:var(--card);display:grid;place-items:center;font-style:normal}
+.feat small{display:block;color:var(--muted)}
+#formWrap{display:grid;place-items:center;padding:20px}
+#card{width:min(400px,100%);background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px;display:flex;flex-direction:column;gap:12px}
+#card h2{margin:6px 0 0}#card p{margin:0;color:var(--muted)}
+.tabs{display:flex;background:var(--bg);border-radius:10px;padding:3px}.tabs button{flex:1;padding:9px;border:0;background:none;border-radius:8px;cursor:pointer;color:var(--muted)}
+.tabs .on{background:var(--card);color:var(--text)}#err{color:#ff8f8f;min-height:1.2em;font-size:.9rem}
+/* app */
+#app{display:none;height:100%;grid-template-columns:310px 1fr}
+#side{background:var(--panel);border-right:1px solid var(--line);display:flex;flex-direction:column;min-height:0}
+#side>.top{padding:16px;display:flex;flex-direction:column;gap:12px}#side-body{flex:1;overflow:auto;padding:0 8px}
+.item{display:flex;gap:11px;align-items:center;padding:10px;border-radius:12px;cursor:pointer}.item:hover,.item.on{background:var(--card)}.item.on{box-shadow:inset 0 0 0 1px var(--a)}
+.item .t{flex:1;min-width:0}.item b{display:block}.item small{color:var(--muted);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item time{color:var(--muted);font-size:.75rem}.badge{background:var(--a);border-radius:99px;font-size:.7rem;padding:2px 7px;margin-top:4px;display:inline-block}
+.av{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;font-weight:700;flex:none;position:relative}
+.av.on::after{content:"";position:absolute;right:0;bottom:0;width:11px;height:11px;border-radius:50%;background:var(--ok);border:2px solid var(--panel)}
+#me{padding:12px 16px;border-top:1px solid var(--line);display:flex;gap:11px;align-items:center}#me .t{flex:1}#me small{color:var(--ok);display:block}
+.gear{background:none;border:0;font-size:1.3rem;cursor:pointer}
+.empty{color:var(--muted);text-align:center;padding:30px 16px;line-height:1.5}
+#main{display:flex;flex-direction:column;min-height:0;min-width:0}
+#head{padding:14px 20px;border-bottom:1px solid var(--line);display:flex;gap:12px;align-items:center}#head small{display:block;color:var(--ok)}
+#msgs{flex:1;overflow:auto;padding:20px;display:flex;flex-direction:column;gap:10px}
+.m{max-width:68%;padding:10px 14px;border-radius:14px;background:var(--card);overflow-wrap:anywhere}.m.me{align-self:flex-end;background:linear-gradient(90deg,var(--a),var(--b))}
+.m time{display:block;font-size:.7rem;opacity:.7;margin-top:3px;text-align:right}
+#bar{display:flex;gap:10px;padding:14px 20px;border-top:1px solid var(--line)}#bar{position:relative;align-items:center}#bar #sendBtn{width:auto;padding:12px 22px}.ib{background:var(--card);border:1px solid var(--line);border-radius:10px;font-size:1.2rem;padding:8px 11px;cursor:pointer}.ib:disabled{opacity:.4;cursor:default}
+#emo{display:none;position:absolute;bottom:100%;left:20px;margin-bottom:6px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:8px;grid-template-columns:repeat(8,1fr);gap:2px}#emo button{background:none;border:0;font-size:1.4rem;cursor:pointer;padding:4px;border-radius:6px}#emo button:hover{background:var(--card)}
+.file{color:inherit;display:block;text-decoration:none}.file small{display:block;opacity:.7}
+/* settings */
+#settings{display:none;padding:28px 32px;overflow:auto}#settings h2{margin-top:0}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:520px;margin-bottom:14px}.row label{font-size:.8rem;color:var(--muted);display:block;margin-bottom:5px}
+.banner{display:flex;gap:16px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;max-width:640px}.banner .ok{font-size:2.4rem}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:640px;margin:14px 0}.cards div{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px}
+.cards small{color:var(--muted);display:block;margin-top:4px}.note{max-width:640px;color:var(--muted);background:var(--panel);border-left:3px solid var(--b);padding:14px;border-radius:8px;line-height:1.5}
+.flow{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:22px 0}.node{text-align:center;width:150px}.node i{width:84px;height:84px;border:2px solid var(--a);border-radius:50%;display:grid;place-items:center;font-size:2rem;margin:0 auto 8px;font-style:normal}
+.node small{display:block;color:var(--muted)}.arrow{color:var(--muted);font-size:1.6rem}
+@media(max-width:760px){#login{grid-template-columns:1fr}#hero{display:none}#app{grid-template-columns:200px 1fr}.row,.cards{grid-template-columns:1fr}}
+</style></head><body>
+<svg style="display:none"><symbol id="lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2" fill="currentColor"/><path d="M8 11V8a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="2.5"/></symbol></svg>
+
+<div id="login">
+  <div id="hero">
+    <div class="brand"><svg class="lg"><use href="#lock"/></svg>Cipher<span>Talk</span></div>
+    <p>Private messages, safer tomorrow. A fully end-to-end encrypted messaging platform with zero data retention. Your conversations belong to you, and only you.</p>
+    <div class="feat"><i>🔒</i><div><b>End-to-end encrypted</b><small>Only you and your recipient can read messages</small></div></div>
+    <div class="feat"><i>🗄️</i><div><b>Zero data retention</b><small>No messages stored on our server</small></div></div>
+    <div class="feat"><i>🛡️</i><div><b>Secure and private</b><small>Keys are created in your browser</small></div></div>
+  </div>
+  <div id="formWrap"><div id="card">
+    <div class="tabs"><button id="t-in" class="on">Sign In</button><button id="t-up">Create Account</button></div>
+    <h2 id="ttl">Welcome back</h2><p id="sub">Sign in to continue to CipherTalk</p>
+    <input id="f-name" placeholder="Your name" style="display:none" maxlength="30" autocomplete="name">
+    <input id="f-email" type="email" placeholder="Email address" autocomplete="email">
+    <input id="f-pw" type="password" placeholder="Password" autocomplete="current-password">
+    <div id="err"></div><button class="btn" id="go">Sign In</button>
+  </div></div>
+</div>
+
+<div id="app">
+  <div id="side">
+    <div class="top"><div class="brand"><svg class="lg"><use href="#lock"/></svg>Cipher<span>Talk</span></div><input id="search" placeholder="Search conversations..."></div>
+    <div id="side-body"></div>
+    <div id="me"></div>
+  </div>
+  <div id="main">
+    <div id="chat" style="display:flex;flex-direction:column;flex:1;min-height:0">
+      <div id="head"></div><div id="msgs"></div>
+      <div id="bar"><div id="emo"></div><button class="ib" id="emoBtn" title="Emoji" aria-label="Emoji" disabled>😊</button><button class="ib" id="fileBtn" title="Send file" aria-label="Send file" disabled>📎</button><input type="file" id="fileIn" hidden><input id="text" placeholder="Type a message" autocomplete="off" disabled><button class="btn" id="sendBtn" disabled>Send</button></div>
+    </div>
+    <div id="settings"></div>
+  </div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id),enc=new TextEncoder(),dec=new TextDecoder();
+const b64=b=>{const a=new Uint8Array(b);let s='';for(let i=0;i<a.length;i+=8192)s+=String.fromCharCode(...a.subarray(i,i+8192));return btoa(s)},ub=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const hue=n=>[...n].reduce((a,c)=>a+c.charCodeAt(0),0)*37%360;
+const av=(n,on)=>`<div class="av${on?' on':''}" style="background:hsl(${hue(n)} 50% 40%)">${esc(n[0]||'?').toUpperCase()}</div>`;
+const tm=ts=>new Date(ts).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});
+let ws,kp,me,users=[],peer=null,mode='in',view='chat',tab='profile';
+const chats={},unread={},keys={};   // memory only: gone on refresh
+
+// ---- login ----
+function setMode(m){mode=m;const up=m==='up';$('t-in').className=up?'':'on';$('t-up').className=up?'on':'';
+  $('f-name').style.display=up?'':'none';$('ttl').textContent=up?'Create your account':'Welcome back';
+  $('sub').textContent=up?'Keys are generated on this device':'Sign in to continue to CipherTalk';$('go').textContent=up?'Create Account':'Sign In';$('err').textContent='';}
+$('t-in').onclick=()=>setMode('in');$('t-up').onclick=()=>setMode('up');
+async function auth(){
+  $('err').textContent='';
+  kp=await crypto.subtle.generateKey({name:'ECDH',namedCurve:'P-256'},false,['deriveKey']); // private key never leaves the browser
+  const pub=b64(await crypto.subtle.exportKey('raw',kp.publicKey));
+  const go=()=>ws.send(JSON.stringify({type:'auth',mode:mode==='up'?'signup':'signin',name:$('f-name').value,email:$('f-email').value,password:$('f-pw').value,pub}));
+  if(ws&&ws.readyState===1)return go();
+  ws=new WebSocket((location.protocol==='https:'?'wss://':'ws://')+location.host);
+  ws.onopen=go;ws.onmessage=onMsg;ws.onclose=()=>{if(me)alert('Disconnected from server. Refresh to sign in again.')};
+}
+$('go').onclick=auth;['f-name','f-email','f-pw'].forEach(i=>$(i).addEventListener('keydown',e=>{if(e.key==='Enter')auth();}));
+
+// ---- crypto ----
+async function sharedKey(u){
+  if(keys[u.pub])return keys[u.pub];
+  const their=await crypto.subtle.importKey('raw',ub(u.pub),{name:'ECDH',namedCurve:'P-256'},false,[]);
+  return keys[u.pub]=await crypto.subtle.deriveKey({name:'ECDH',public:their},kp.privateKey,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);
+}
+async function onMsg(e){
+  const m=JSON.parse(e.data);
+  if(m.type==='error')$('err').textContent=m.text;
+  if(m.type==='authed'){me=m.me;$('login').style.display='none';$('app').style.display='grid';render();}
+  if(m.type==='users'){users=m.list.filter(u=>u.id!==me.id);if(peer)peer=users.find(u=>u.id===peer.id)||null;render();}
+  if(m.type==='msg'){
+    const u=users.find(x=>x.id===m.from);if(!u)return;const e2={mine:false,ts:m.ts};
+    try{const key=await sharedKey(u),text=dec.decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:ub(m.iv)},key,ub(m.ct)));
+      if(m.fct){const meta=JSON.parse(text),bytes=await crypto.subtle.decrypt({name:'AES-GCM',iv:ub(m.fiv)},key,ub(m.fct));
+        e2.file={name:String(meta.name),size:+meta.size||0,type:String(meta.type),url:URL.createObjectURL(new Blob([bytes],{type:String(meta.type)}))};}
+      else e2.text=text;
+    }catch{e2.text='[could not decrypt]'}
+    (chats[m.from]||=[]).push(e2);
+    if(!peer||peer.id!==m.from)unread[m.from]=(unread[m.from]||0)+1;
+    render();
+  }
+}
+async function sendMsg(){
+  const text=$('text').value.trim();if(!text||!peer)return;
+  const iv=crypto.getRandomValues(new Uint8Array(12));
+  const ct=await crypto.subtle.encrypt({name:'AES-GCM',iv},await sharedKey(peer),enc.encode(text));
+  ws.send(JSON.stringify({type:'msg',to:peer.id,iv:b64(iv),ct:b64(ct)}));
+  (chats[peer.id]||=[]).push({mine:true,text,ts:Date.now()});$('text').value='';render();
+}
+$('sendBtn').onclick=sendMsg;$('text').addEventListener('keydown',e=>{if(e.key==='Enter')sendMsg();});$('search').oninput=render;
+const MAX=2*1024*1024,fmt=n=>n>1048576?(n/1048576).toFixed(1)+' MB':Math.max(1,Math.round(n/1024))+' KB';
+const fileHtml=f=>(/^image\/(png|jpe?g|gif|webp)$/.test(f.type)?`<img src="${f.url}" alt="" style="max-width:240px;max-height:200px;border-radius:8px;display:block;margin-bottom:6px">`:'')+`<a class="file" href="${f.url}" download="${esc(f.name)}">📄 ${esc(f.name)}<small>${fmt(f.size)} · Encrypted</small></a>`;
+async function sendFile(f){
+  if(!peer||!f)return;
+  if(f.size>MAX)return alert('File is too large. The maximum size is 2 MB.');
+  const key=await sharedKey(peer),bytes=await f.arrayBuffer(),iv=crypto.getRandomValues(new Uint8Array(12)),fiv=crypto.getRandomValues(new Uint8Array(12));
+  const meta=JSON.stringify({name:f.name,type:f.type,size:f.size});   // file name is encrypted too
+  const ct=await crypto.subtle.encrypt({name:'AES-GCM',iv},key,enc.encode(meta)),fct=await crypto.subtle.encrypt({name:'AES-GCM',iv:fiv},key,bytes);
+  ws.send(JSON.stringify({type:'msg',to:peer.id,iv:b64(iv),ct:b64(ct),fiv:b64(fiv),fct:b64(fct)}));
+  (chats[peer.id]||=[]).push({mine:true,file:{name:f.name,size:f.size,type:f.type,url:URL.createObjectURL(f)},ts:Date.now()});render();
+}
+const EMOJIS='😀 😁 😂 🤣 😊 😍 😘 😎 🤔 😢 😭 😡 👍 👎 👏 🙏 💪 🎉 🔥 ❤️ 💯 ✅ 👀 🙌 🤝 😴 🤗 😅 😇 🥳 😜 🤯 🚀 ⭐ 🎂 🌹 🙂 😉 😋 🤩'.split(' ');
+$('emo').innerHTML=EMOJIS.map(e=>`<button type="button">${e}</button>`).join('');
+$('emoBtn').onclick=()=>{const o=$('emo');o.style.display=o.style.display==='grid'?'none':'grid'};
+$('emo').onclick=e=>{const b=e.target.closest('button');if(!b)return;const t=$('text'),a=t.selectionStart,z=t.selectionEnd;t.value=t.value.slice(0,a)+b.textContent+t.value.slice(z);t.focus();t.selectionStart=t.selectionEnd=a+b.textContent.length};
+$('fileBtn').onclick=()=>$('fileIn').click();
+$('fileIn').onchange=e=>{sendFile(e.target.files[0]);e.target.value=''};
+
+// ---- rendering ----
+function render(){
+  $('me').innerHTML=`${av(me.name,true)}<div class="t"><b>${esc(me.name)}</b><small>online</small></div><button class="gear" id="gear" title="Settings" aria-label="Settings">⚙️</button>`;
+  $('gear').onclick=()=>{view=view==='chat'?'settings':'chat';render()};
+  $('chat').style.display=view==='chat'?'flex':'none';$('settings').style.display=view==='settings'?'block':'none';
+  view==='chat'?renderChat():renderSettings();
+}
+function renderChat(){
+  const q=$('search').value.toLowerCase(),list=users.filter(u=>u.name.toLowerCase().includes(q));
+  $('side-body').innerHTML=list.length?list.map(u=>{const c=chats[u.id]||[],l=c[c.length-1],n=unread[u.id];
+    return `<div class="item${peer&&peer.id===u.id?' on':''}" data-id="${u.id}">${av(u.name,true)}<div class="t"><b>${esc(u.name)}</b><small>${l?esc(l.file?'📎 '+l.file.name:l.text):esc(u.status)}</small></div><div style="text-align:right">${l?`<time>${tm(l.ts)}</time>`:''}${n?`<span class="badge">${n}</span>`:''}</div></div>`}).join('')
+    :`<div class="empty">${users.length?'No matches.':'Nobody else is online yet. Open a second tab and create another account to chat.'}</div>`;
+  $('side-body').onclick=e=>{const d=e.target.closest('[data-id]');if(d){peer=users.find(u=>u.id===d.dataset.id);unread[peer.id]=0;render();}};
+  $('head').innerHTML=peer?`${av(peer.name,true)}<div><b>${esc(peer.name)}</b><small>online · end-to-end encrypted</small></div>`:'<b>Select a conversation</b>';
+  $('text').disabled=$('sendBtn').disabled=$('emoBtn').disabled=$('fileBtn').disabled=!peer;
+  const box=$('msgs');
+  box.innerHTML=peer?(chats[peer.id]||[]).map(c=>`<div class="m${c.mine?' me':''}">${c.file?fileHtml(c.file):esc(c.text)}<time>${tm(c.ts)}</time></div>`).join('')
+    :'<div class="empty" style="margin:auto">Pick someone from the list to start an encrypted chat.</div>';
+  box.scrollTop=box.scrollHeight;
+}
+function renderSettings(){
+  const nav=[['profile','👤 Profile'],['security','🔒 Security & Encryption'],['about','ℹ️ About']];
+  $('side-body').innerHTML=nav.map(([k,l])=>`<div class="item${tab===k?' on':''}" data-tab="${k}">${l}</div>`).join('')+'<div class="item" data-tab="back">← Back to chats</div>';
+  $('side-body').onclick=e=>{const d=e.target.closest('[data-tab]');if(!d)return;if(d.dataset.tab==='back')view='chat';else tab=d.dataset.tab;render();};
+  const S=$('settings');
+  if(tab==='profile'){S.innerHTML=`<h2>Profile</h2><div class="row"><div><label>Name</label><input id="p-name" value="${esc(me.name)}" maxlength="30"></div><div><label>Email</label><input value="${esc(me.email)}" disabled></div></div>
+    <div class="row"><div style="grid-column:1/3"><label>Status</label><input id="p-status" value="${esc(me.status)}" maxlength="80"></div></div><button class="btn" id="save" style="width:auto;padding:12px 24px">Update Profile</button>`;
+    $('save').onclick=()=>{me.name=$('p-name').value.trim()||me.name;me.status=$('p-status').value;ws.send(JSON.stringify({type:'profile',name:me.name,status:me.status}));render();};}
+  if(tab==='security')S.innerHTML=`<h2>Security & Encryption</h2><div class="banner"><div class="ok">✅</div><div><b>End-to-End Encryption Enabled</b><br><span style="color:var(--muted)">Your messages are encrypted on your device and can only be decrypted by you and the recipient.</span></div></div>
+    <div class="cards"><div><b>Key Exchange</b><small>ECDH, P-256 curve</small></div><div><b>Message Encryption</b><small>AES-256-GCM (authenticated)</small></div><div><b>Server Storage</b><small>No messages stored, relay only</small></div><div><b>Private Keys</b><small>Created in your browser, never sent</small></div></div>
+    <div class="note">Keys live only in this tab. Refreshing or closing it permanently discards them and your chat history.</div>`;
+  if(tab==='about')S.innerHTML=`<h2>How CipherTalk keeps you safe</h2><div class="flow"><div class="node"><i>👤</i><b>Your device</b><small>Encrypts messages</small></div><span class="arrow">→</span><div class="node"><i>🗄️</i><b>CipherTalk server</b><small>Only relays encrypted data. No plaintext stored.</small></div><span class="arrow">→</span><div class="node"><i>👥</i><b>Recipient's device</b><small>Decrypts messages</small></div></div>
+    <div class="note">Messages are encrypted on your device, relayed as ciphertext, and decrypted only by the recipient.</div>`;
+}
+</script></body></html>
